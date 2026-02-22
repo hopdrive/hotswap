@@ -21,7 +21,7 @@ export default defineConfig([
       'vite',
     ],
     clean: true,
-    splitting: false,
+    splitting: true,
   },
   {
     entry: { 'cli/generate-version-json': 'src/cli/generate-version-json.ts' },
