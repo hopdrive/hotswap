@@ -27,10 +27,13 @@ export default function CountdownButton({
       variant="contained"
       size="small"
       onClick={onClick}
+      disableElevation
       sx={{
-        flex: 1,
         position: 'relative',
         overflow: 'hidden',
+        textTransform: 'none',
+        fontWeight: 700,
+        px: 3,
       }}
     >
       {/* Progress fill overlay (left → right) */}
