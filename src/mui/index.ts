@@ -7,3 +7,5 @@ export { default as CriticalUpdateBanner } from './CriticalUpdateBanner';
 export type { CriticalUpdateBannerProps } from './CriticalUpdateBanner';
 export { default as CountdownButton } from './CountdownButton';
 export type { CountdownButtonProps } from './CountdownButton';
+export { default as ReleaseNotesModal } from './ReleaseNotesModal';
+export type { ReleaseNotesModalProps } from './ReleaseNotesModal';

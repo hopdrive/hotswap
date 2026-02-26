@@ -1,9 +1,13 @@
 // ── Vite plugin for @hopdrive/hotswap ───────────────────────────────
 // Injects build-time constants and emits sw.js into the build output.
+// Optionally compiles releases/*.mdx via the MDX sub-plugin.
 
 import type { Plugin } from 'vite';
 import { execSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
+import { hotswapMDXPlugin } from './mdx-plugin';
+
+export type { HotswapMDXPluginOptions } from './mdx-plugin';
 
 export interface AppUpdaterViteOptions {
   /** Override the build hash. Default: git short SHA. */
@@ -16,6 +20,10 @@ export interface AppUpdaterViteOptions {
   swSource?: string;
   /** Disable SW emission (e.g. if you manage your own SW). Default: false. */
   disableSW?: boolean;
+  /** Disable the MDX release compilation sub-plugin. Default: false. */
+  disableMDX?: boolean;
+  /** Directory containing release MDX files. Default: 'releases'. */
+  releasesDir?: string;
 }
 
 function gitSha(): string {
@@ -56,14 +64,15 @@ self.addEventListener('message', (event) => {
 });
 `;
 
-export function appUpdaterPlugin(options: AppUpdaterViteOptions = {}): Plugin {
+export function appUpdaterPlugin(options: AppUpdaterViteOptions = {}): Plugin[] {
   const hash = options.buildHash ?? gitSha();
   const version = options.version ?? pkgVersion();
   const buildTime = options.buildTime ?? new Date().toISOString();
   const swSource = options.swSource ?? DEFAULT_SW_SOURCE;
   const disableSW = options.disableSW ?? false;
+  const disableMDX = options.disableMDX ?? false;
 
-  return {
+  const corePlugin: Plugin = {
     name: 'hotswap',
 
     config() {
@@ -85,4 +94,12 @@ export function appUpdaterPlugin(options: AppUpdaterViteOptions = {}): Plugin {
       });
     },
   };
+
+  const plugins: Plugin[] = [corePlugin];
+
+  if (!disableMDX) {
+    plugins.push(hotswapMDXPlugin({ releasesDir: options.releasesDir }));
+  }
+
+  return plugins;
 }

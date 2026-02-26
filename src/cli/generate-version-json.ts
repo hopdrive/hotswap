@@ -27,7 +27,18 @@ const mediaPath = process.env.RELEASE_MEDIA_PATH || 'release-media.json';
 const mediaByVersion = fs.existsSync(mediaPath)
   ? safeJsonParse(fs.readFileSync(mediaPath, 'utf8'))
   : null;
-const media = mediaByVersion?.[APP_VERSION]?.media || undefined;
+const mediaEntry = mediaByVersion?.[APP_VERSION];
+const media = mediaEntry?.media || undefined;
+
+// Optional features/CTA data (can live in release-media.json or separate file)
+const featuresPath = process.env.RELEASE_FEATURES_PATH || 'release-features.json';
+const featuresByVersion = fs.existsSync(featuresPath)
+  ? safeJsonParse(fs.readFileSync(featuresPath, 'utf8'))
+  : null;
+const featuresEntry = featuresByVersion?.[APP_VERSION] || mediaEntry;
+const features = featuresEntry?.features || undefined;
+const ctaLabel = featuresEntry?.ctaLabel || undefined;
+const ctaUrl = featuresEntry?.ctaUrl || undefined;
 
 const versionJson = {
   version: APP_VERSION,
@@ -38,6 +49,9 @@ const versionJson = {
     title: parsed.title,
     summary: parsed.summary,
     bullets: parsed.bullets,
+    ...(features ? { features } : {}),
+    ...(ctaLabel ? { ctaLabel } : {}),
+    ...(ctaUrl ? { ctaUrl } : {}),
     ...(learnMoreUrl ? { learnMoreUrl } : {}),
     ...(media ? { media } : {}),
   },

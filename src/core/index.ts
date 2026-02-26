@@ -5,6 +5,7 @@ export type {
   Impact,
   UpdateStatus,
   MediaItem,
+  Feature,
   VersionNotes,
   VersionJson,
   UpdateState,
@@ -13,6 +14,8 @@ export type {
   UpdateLogger,
   ChannelMessageType,
   ChannelMessage,
+  ReleaseFrontmatter,
+  CompiledRelease,
 } from './types';
 
 // Coordinator

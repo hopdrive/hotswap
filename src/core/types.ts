@@ -15,11 +15,21 @@ export interface MediaItem {
   title?: string;
 }
 
+/** A structured feature row inside release notes. */
+export interface Feature {
+  icon?: string;       // MUI icon name, e.g. "PlayArrow", "AccountTree"
+  heading: string;     // Bold subheading
+  description: string; // 1-3 line description
+}
+
 /** Structured release notes authored via changesets. */
 export interface VersionNotes {
   title: string;
   summary: string;
   bullets: string[];
+  features?: Feature[];   // Structured feature rows
+  ctaLabel?: string;      // Primary CTA button label
+  ctaUrl?: string;        // Primary CTA button URL
   learnMoreUrl?: string;
   media?: MediaItem[];
 }
@@ -78,4 +88,25 @@ export interface ChannelMessage {
   type: ChannelMessageType;
   tabId: string;
   payload?: VersionJson;
+}
+
+// ── MDX release content types ────────────────────────────────────────
+
+/** Frontmatter extracted from a `releases/{version}.mdx` file. */
+export interface ReleaseFrontmatter {
+  version: string;
+  impact: Impact;
+  title: string;
+  summary: string;
+  features?: Feature[];
+  ctaLabel?: string;
+  ctaUrl?: string;
+}
+
+/** A compiled MDX release — frontmatter metadata + React component. */
+export interface CompiledRelease {
+  frontmatter: ReleaseFrontmatter;
+  /** Pre-compiled MDX component for the release body content. */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  Component: (props: Record<string, any>) => any;
 }
