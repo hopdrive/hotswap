@@ -27,6 +27,12 @@ import IntegrationInstructionsIcon from '@mui/icons-material/IntegrationInstruct
 import SettingsIcon from '@mui/icons-material/Settings';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import GroupsIcon from '@mui/icons-material/Groups';
+import TimelineIcon from '@mui/icons-material/Timeline';
+import BoltIcon from '@mui/icons-material/Bolt';
+import PaletteIcon from '@mui/icons-material/Palette';
+import PeopleIcon from '@mui/icons-material/People';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import type { SvgIconProps } from '@mui/material/SvgIcon';
 import type { ComponentType } from 'react';
 import type { Impact, VersionNotes, MediaItem, Feature } from '../core/types';
@@ -48,6 +54,12 @@ const ICON_MAP: Record<string, ComponentType<SvgIconProps>> = {
   Settings: SettingsIcon,
   Visibility: VisibilityIcon,
   Notifications: NotificationsIcon,
+  Groups: GroupsIcon,
+  Timeline: TimelineIcon,
+  Bolt: BoltIcon,
+  Palette: PaletteIcon,
+  People: PeopleIcon,
+  TrendingUp: TrendingUpIcon,
 };
 
 function FeatureIcon({ name }: { name?: string }) {

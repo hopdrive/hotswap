@@ -7,6 +7,7 @@ import { useUpdateToastState } from '../react/useUpdateToastState';
 import { useUpdateContext } from '../react/UpdateProvider';
 import UpdateToast from './UpdateToast';
 import CriticalUpdateBanner from './CriticalUpdateBanner';
+import ReleaseNotesModal from './ReleaseNotesModal';
 
 export default function MuiUpdateToast() {
   const { config } = useUpdateContext();
@@ -22,6 +23,8 @@ export default function MuiUpdateToast() {
     onDismiss,
   } = useUpdateToastState();
 
+  const hasFeatures = (remoteVersion?.notes.features?.length ?? 0) > 0;
+
   return (
     <>
       {/* Critical banner sits above everything */}
@@ -34,8 +37,23 @@ export default function MuiUpdateToast() {
         />
       )}
 
-      {/* Update toast — shown for all impact levels */}
-      {remoteVersion && (
+      {/* Rich modal for releases with features */}
+      {remoteVersion && hasFeatures && (
+        <ReleaseNotesModal
+          open={phase === 'toast_visible' || phase === 'countdown'}
+          notes={remoteVersion.notes}
+          version={remoteVersion.version}
+          impact={remoteVersion.impact}
+          onClose={onDismiss}
+          showCountdown={phase === 'countdown'}
+          secondsRemaining={secondsRemaining}
+          countdownFrom={config.countdownSeconds}
+          onReloadNow={onReloadNow}
+        />
+      )}
+
+      {/* Simple toast fallback for patches without features */}
+      {remoteVersion && !hasFeatures && (
         <UpdateToast
           phase={phase}
           secondsRemaining={secondsRemaining}

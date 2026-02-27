@@ -84,7 +84,13 @@ Optional MDX body content for the changelog page. Supports `<Video>`,
 
 Update `version` in `package.json` to match. The MDX filename, frontmatter `version`, and `package.json` version should all agree.
 
-### 4. Build and verify
+### 4. Generate hero image (optional)
+
+```bash
+hotswap generate-hero
+```
+
+### 5. Build and verify
 
 ```bash
 npm run build
@@ -94,7 +100,7 @@ This runs `tsc` → `vite build` (injects build hash, compiles MDX, emits `sw.js
 
 The CLI prints the generated JSON to stdout so you can verify the title, summary, and features before deploying.
 
-### 5. Deploy
+### 6. Deploy
 
 Push to your hosting provider. When customers' tabs poll `/version.json` and detect a new `buildHash`, they see the update notification.
 
