@@ -4,29 +4,17 @@ Zero-config SPA update detection and notification system. Detects new deployment
 
 Built for React + MUI + Vite apps.
 
-## Install
-
-```bash
-npm install @hopdrive/hotswap
-```
-
 ## Quick Start
 
-### 1. Add the Vite plugin
-
-```ts
-// vite.config.ts
-import { appUpdaterPlugin } from '@hopdrive/hotswap/vite';
-
-export default defineConfig({
-  plugins: [react(), appUpdaterPlugin()],
-});
+```bash
+npx @hopdrive/hotswap init
 ```
 
-### 2. Wrap your app
+This installs the package, adds the Vite plugin to your config, scaffolds type declarations in `vite-env.d.ts`, and creates a starter release in `releases/`. Then follow the printed instructions:
+
+### 1. Wrap your app
 
 ```tsx
-// App.tsx
 import { UpdateProvider } from '@hopdrive/hotswap/react';
 import { MuiUpdateToast } from '@hopdrive/hotswap/mui';
 
@@ -40,28 +28,20 @@ function App() {
 }
 ```
 
-### 3. Add type declarations
+### 2. Add a changelog route
 
-If `hotswap init` didn't modify your `vite-env.d.ts` automatically, add these declarations so TypeScript recognizes the build-time constants and virtual module:
+```tsx
+import { ChangelogPage } from '@hopdrive/hotswap/changelog';
 
-```ts
-// src/vite-env.d.ts
-declare const __APP_UPDATER_BUILD_HASH__: string;
-declare const __APP_UPDATER_VERSION__: string;
-declare const __APP_UPDATER_BUILD_TIME__: string;
-
-declare module 'virtual:hotswap-releases' {
-  import type { CompiledRelease } from '@hopdrive/hotswap';
-  export const releases: CompiledRelease[];
-}
+<Route path="/changelog" element={<ChangelogPage />} />
 ```
 
-### 4. Generate version.json on build
+### 3. Update your build script
 
 ```json
 {
   "scripts": {
-    "build": "vite build && generate-version-json"
+    "build": "vite build && hotswap generate-version-json"
   }
 }
 ```

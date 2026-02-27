@@ -1,6 +1,6 @@
 {
   "name": "@hopdrive/hotswap",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Zero-config SPA update detection and notification system for React + MUI + Vite apps",
   "type": "module",
   "license": "MIT",
