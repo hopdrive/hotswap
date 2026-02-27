@@ -100,7 +100,11 @@ This runs `tsc` → `vite build` (injects build hash, compiles MDX, emits `sw.js
 
 The CLI prints the generated JSON to stdout so you can verify the title, summary, and features before deploying.
 
-### 6. Deploy
+### 6. Verify changelog is reachable
+
+Make sure `/changelog` is linked in your app's navigation (sidebar, footer, etc.) so users can find it. The release modal's "Learn More" link and `learnMoreUrl` both point to `/changelog#v{version}`.
+
+### 7. Deploy
 
 Push to your hosting provider. When customers' tabs poll `/version.json` and detect a new `buildHash`, they see the update notification.
 
