@@ -190,12 +190,16 @@ export function hotswapMDXPlugin(options: HotswapMDXPluginOptions = {}): Plugin 
         }
 
         if (componentCode) {
-          // Emit as a compiled MDX function-body module
+          // MDX function-body output uses arguments[0] for the JSX runtime.
+          // Wrap in a regular function (not arrow) so arguments is available,
+          // then call it with the runtime and extract the default export.
           releaseModules.push(
             `(() => {
   const frontmatter = ${JSON.stringify(frontmatter)};
-  ${componentCode}
-  return { frontmatter, Component: MDXContent };
+  const _mdx = (function() {
+    ${componentCode}
+  })(_runtime);
+  return { frontmatter, Component: _mdx.default };
 })()`
           );
         } else {
@@ -206,7 +210,9 @@ export function hotswapMDXPlugin(options: HotswapMDXPluginOptions = {}): Plugin 
         }
       }
 
-      return `export const releases = [${releaseModules.join(',\n')}];`;
+      // Import JSX runtime so compiled MDX function-body code can access it
+      // via arguments[0] when called as a regular function.
+      return `import { Fragment, jsx, jsxs } from 'react/jsx-runtime';\nconst _runtime = { Fragment, jsx, jsxs };\nexport const releases = [${releaseModules.join(',\n')}];`;
     },
 
     configureServer(server) {
