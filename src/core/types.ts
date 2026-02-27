@@ -92,14 +92,42 @@ export interface ChannelMessage {
 
 // ── MDX release content types ────────────────────────────────────────
 
-/** Frontmatter extracted from a `releases/{version}.mdx` file. */
+/**
+ * Frontmatter extracted from a `releases/{version}.mdx` file.
+ *
+ * @example
+ * ```yaml
+ * ---
+ * version: "1.4.0"
+ * impact: minor
+ * title: "Team Activity Feed"
+ * summary: "Track what your team is doing in real-time."
+ * features:
+ *   - icon: Groups
+ *     heading: "Live Activity Stream"
+ *     description: "See deploys, merges, and config changes as they happen."
+ *   - icon: Timeline
+ *     heading: "Activity History"
+ *     description: "Scroll back through your team's recent actions."
+ * ctaLabel: "Try it now"
+ * ctaUrl: "/team"
+ * ---
+ * ```
+ */
 export interface ReleaseFrontmatter {
+  /** Semver version string. Must match the MDX filename (e.g. `1.4.0` → `releases/1.4.0.mdx`). */
   version: string;
+  /** How urgently users should update. Controls notification style — see README for mapping. */
   impact: Impact;
+  /** Short title shown in toast, modal heading, and changelog. */
   title: string;
+  /** 1-2 sentence summary shown in the update toast body text. */
   summary: string;
+  /** Structured feature rows shown in the release notes modal. Each needs a heading + description; icon is optional (MUI icon name). */
   features?: Feature[];
+  /** Primary CTA button label in the release notes modal (e.g. "Try it now"). */
   ctaLabel?: string;
+  /** URL for the primary CTA button. */
   ctaUrl?: string;
 }
 
