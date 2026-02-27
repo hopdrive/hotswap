@@ -66,16 +66,57 @@ export async function runInit(): Promise<void> {
     console.log('    // In plugins array: appUpdaterPlugin()');
   }
 
-  // 5. Provide manual instructions for remaining steps
+  // 5. Add type declarations to vite-env.d.ts
+  const viteEnvModified = addTypeDeclarations(root);
+  if (viteEnvModified) {
+    console.log(`  Modified src/vite-env.d.ts (added type declarations)`);
+  }
+
+  // 6. Provide manual instructions for remaining steps
   console.log('\n  Next steps (manual):');
   console.log('  1. Wrap your <App /> in <UpdateProvider buildHash={__APP_UPDATER_BUILD_HASH__}>');
   console.log('  2. Add <MuiUpdateToast /> inside the provider');
   console.log('  3. Add a route: <Route path="/changelog" element={<ChangelogPage />} />');
-  console.log('  4. Install optional peer deps: npm install @mdx-js/mdx @mdx-js/react');
-  console.log('  5. Add to build script: hotswap generate-version-json');
+  if (!viteEnvModified) {
+    console.log('  4. Add type declarations to vite-env.d.ts (see README)');
+    console.log('  5. Add to build script: hotswap generate-version-json');
+  } else {
+    console.log('  4. Add to build script: hotswap generate-version-json');
+  }
   console.log('\n  See https://github.com/hopdrive/hotswap#readme for full docs.');
 
   console.log('\n[hotswap init] Done!\n');
+}
+
+function addTypeDeclarations(root: string): boolean {
+  const candidates = [
+    join(root, 'src', 'vite-env.d.ts'),
+    join(root, 'vite-env.d.ts'),
+    join(root, 'src', 'env.d.ts'),
+    join(root, 'env.d.ts'),
+  ];
+
+  const envFile = candidates.find((f) => existsSync(f));
+  if (!envFile) return false;
+
+  let content = readFileSync(envFile, 'utf8');
+  if (content.includes('__APP_UPDATER_BUILD_HASH__')) return true; // already present
+
+  const declarations = `
+declare const __APP_UPDATER_BUILD_HASH__: string;
+declare const __APP_UPDATER_VERSION__: string;
+declare const __APP_UPDATER_BUILD_TIME__: string;
+
+declare module 'virtual:hotswap-releases' {
+  import type { CompiledRelease } from '@hopdrive/hotswap';
+  export const releases: CompiledRelease[];
+}
+`;
+
+  // Append after existing content, ensuring a blank line separator
+  if (!content.endsWith('\n')) content += '\n';
+  writeFileSync(envFile, content + declarations, 'utf8');
+  return true;
 }
 
 function findViteConfig(root: string): string | null {

@@ -40,7 +40,23 @@ function App() {
 }
 ```
 
-### 3. Generate version.json on build
+### 3. Add type declarations
+
+If `hotswap init` didn't modify your `vite-env.d.ts` automatically, add these declarations so TypeScript recognizes the build-time constants and virtual module:
+
+```ts
+// src/vite-env.d.ts
+declare const __APP_UPDATER_BUILD_HASH__: string;
+declare const __APP_UPDATER_VERSION__: string;
+declare const __APP_UPDATER_BUILD_TIME__: string;
+
+declare module 'virtual:hotswap-releases' {
+  import type { CompiledRelease } from '@hopdrive/hotswap';
+  export const releases: CompiledRelease[];
+}
+```
+
+### 4. Generate version.json on build
 
 ```json
 {
