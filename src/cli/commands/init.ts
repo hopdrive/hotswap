@@ -1,6 +1,7 @@
 // ── hotswap init ─────────────────────────────────────────────────────
 // Codemod to scaffold hotswap into an existing React + Vite + MUI app.
 
+import { execSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
@@ -25,12 +26,21 @@ export async function runInit(): Promise<void> {
     process.exit(1);
   }
 
-  // 2. Scaffold releases/ directory with example MDX
+  // 2. Install @hopdrive/hotswap if not already a dependency
+  const pkg = JSON.parse(readFileSync(pkgPath, 'utf8'));
+  const deps = pkg.dependencies ?? {};
+  const devDeps = pkg.devDependencies ?? {};
+  if (!deps['@hopdrive/hotswap'] && !devDeps['@hopdrive/hotswap']) {
+    console.log('  Installing @hopdrive/hotswap...');
+    execSync('npm install @hopdrive/hotswap', { cwd: root, stdio: 'inherit' });
+    console.log('  Installed @hopdrive/hotswap');
+  }
+
+  // 3. Scaffold releases/ directory with example MDX
   const releasesDir = join(root, 'releases');
   if (!existsSync(releasesDir)) {
     mkdirSync(releasesDir, { recursive: true });
     const templatePath = resolve(__dirname, '../templates/example-release.mdx');
-    const pkg = JSON.parse(readFileSync(pkgPath, 'utf8'));
     const version = pkg.version || '0.1.0';
 
     if (existsSync(templatePath)) {
@@ -49,14 +59,14 @@ export async function runInit(): Promise<void> {
     console.log('  releases/ directory already exists, skipping.');
   }
 
-  // 3. Create public/release-heroes/ directory
+  // 4. Create public/release-heroes/ directory
   const heroesDir = join(root, 'public', 'release-heroes');
   if (!existsSync(heroesDir)) {
     mkdirSync(heroesDir, { recursive: true });
     console.log('  Created public/release-heroes/');
   }
 
-  // 4. Modify vite.config
+  // 5. Modify vite.config
   const modified = await modifyViteConfig(viteConfigPath);
   if (modified) {
     console.log(`  Modified ${viteConfigPath.replace(root + '/', '')}`);
@@ -66,13 +76,13 @@ export async function runInit(): Promise<void> {
     console.log('    // In plugins array: appUpdaterPlugin()');
   }
 
-  // 5. Add type declarations to vite-env.d.ts
+  // 6. Add type declarations to vite-env.d.ts
   const viteEnvModified = addTypeDeclarations(root);
   if (viteEnvModified) {
     console.log(`  Modified src/vite-env.d.ts (added type declarations)`);
   }
 
-  // 6. Provide manual instructions for remaining steps
+  // 7. Provide manual instructions for remaining steps
   console.log('\n  Next steps (manual):');
   console.log('  1. Wrap your <App /> in <UpdateProvider buildHash={__APP_UPDATER_BUILD_HASH__}>');
   console.log('  2. Add <MuiUpdateToast /> inside the provider');
